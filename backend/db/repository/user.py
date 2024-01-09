@@ -35,7 +35,6 @@ def create_new_user(user: UserCreate, db: Session):
     try:
         db.commit()
     except IntegrityError:
-        print("rolling back")
         db.rollback()
         raise ValidationError(
             [

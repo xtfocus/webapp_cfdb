@@ -13,7 +13,5 @@ def protected_one(
     userdb: Session = Depends(get_userdb),
     current_user: User = Depends(get_current_user),
 ):
-    print("debug0")
     message = show_test_private(id, db=userdb)
-    print("debug1", message)
     return {"message": message}

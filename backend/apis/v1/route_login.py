@@ -17,7 +17,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 def authenticate_user(email: str, password: str, db: Session):
     user = get_user(email=email, db=db)
-    print(user)
     if not user:
         return False
     if not Hasher.verify_password(password, user.password):
@@ -33,7 +32,6 @@ def get_current_user(
         detail="Could not validate credentials",
     )
 
-    print("Trying to get the user")
     try:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
@@ -60,5 +58,4 @@ def login_for_access_token(
             detail="Incorrect username or password",
         )
     access_token = create_access_token(data={"sub": user.email})
-    print("hehe {access_token}")
     return {"access_token": access_token, "token_type": "bearer"}
