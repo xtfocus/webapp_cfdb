@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>{{view.title}}</title>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <h1 class="display-4 text-center">{{view.title}}</h1>
+        <p class="text-secondary my-4">{{view.content}}</p>
+
+        <a href="/test/{{view.id}}" class="btn btn-outline-danger col-sm-1 justify-content-center">Secret Message</a>
+    </div>
+
+
+    </div>
+</div>
+{% endblock %}
+

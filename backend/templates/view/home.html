@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>Long Chau's Clinical Findings Explorer</title>
+{% endblock %}
+
+{% block content %}
+
+<script>
+        
+        function submitForm(route) {
+        // Get the form element based on the route
+        var userInput = document.getElementById('UserInput_' + route).value;
+
+        // Construct the URL with the provided table name and route
+        window.location.href = route + encodeURIComponent(userInput);
+        }
+
+        function generateForms(routeArray) {
+            for (var i = 0; i < routeArray.length; i++) {
+                var route = routeArray[i];
+                var routeName = route.split('/')[2]; // Extract the route name
+                document.write(
+                    '<form id="form_' + routeName + '" onsubmit="submitForm(\'' + route + '\'); return false;">' +
+                    '<div class="mb-3">' +
+                    '<label for="' + routeName + 'UserInput" class="form-label">' + route + '</label>' +
+                    '<input type="text" class="form-control" id="UserInput_' + route + '" required>' +
+                    '<button type="submit" class="btn btn-primary">Go</button>' +
+                    '</div>' +
+                    '</form>'
+                );
+            }
+        }
+
+</script>
+
+<div class="container mt-5">
+
+    <h2>Table MetaData</h2>
+        <script>
+        // Example usage
+        var routes = [
+            '/table/summary/',
+        ];
+
+        generateForms(routes);
+        </script>
+        
+    <h2>Vietnamese Concept Explorer</h2>
+        <script>
+        // Example usage
+        var routes = [
+            '/concept/vi/',
+            '/term/vi/'
+        ];
+        generateForms(routes);
+        </script>
+    <h2>English Concept Explorer</h2>
+        <script>
+        // Example usage
+        var routes = [
+            '/concept/en/',
+            '/term/en/'
+        ];
+        generateForms(routes);
+        </script>
+
+
+    <h2>Editor's progress</h2>
+            <ul class="list-group">
+              <a href="/summary/editor/update_count" class="list-group-item">update_count</a>
+              <a href="/summary/editor/insert_count" class="list-group-item">insert_count</a>
+            </ul>
+
+</div>
+
+
+{% endblock %}
+
+
