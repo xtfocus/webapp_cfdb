@@ -4,11 +4,11 @@ version: '3.8'
 services:
   fastapi:
     build: .
-    command: bash -c "cd backend && gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:80"
+    command: bash -c "cd backend && gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8009"
     volumes:
       - .:/backend
     ports:
-      - 8009:8000
+      - 8009:8009
     env_file:
       - backend/.env
 
