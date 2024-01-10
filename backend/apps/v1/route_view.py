@@ -196,6 +196,30 @@ async def discover_en_term(
     }
 
 
+@router.get("/term/vi/{vi_term}")
+async def check_vn_term_exist(
+    request: Request,
+    vi_term: str = vi_term_path,
+    db: Session = Depends(get_knowledgebase),
+    userdb: Session = Depends(get_userdb),
+) -> bool:
+    """
+    Check if Vietnamese term vn_term exists in the database
+    """
+    response = validate_login(request, userdb)
+    if response:
+        return response
+
+    found = False
+    with engine.connect() as conn:
+        if view.vn_synonym_to_vn_main(conn, vi_term) or view.vn_main_in_dictionary(
+            conn, vi_term
+        ):
+            found = True
+
+    return found
+
+
 @router.get("/term/en/{en_term}")
 async def check_en_term_exist(
     request: Request,
@@ -206,6 +230,9 @@ async def check_en_term_exist(
     """
     Check if English term en_term exists in the database
     """
+    response = validate_login(request, userdb)
+    if response:
+        return response
 
     found = False
     with engine.connect() as conn:
