@@ -30,7 +30,7 @@ class Settings:
 
     SECRET_KEY: str = os.getenv("SECRET_KEY")
     ALGORITHM = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("TIMEOUT")  # in mins
+    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("TIMEOUT"))  # in mins
     FAMILY = os.getenv("FAMILY")
 
 
