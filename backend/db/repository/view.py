@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional, Union
 
 from db.models.table import TableName
 from db.session import knowledgebase_engine as engine
@@ -446,6 +446,47 @@ def rows_per_editors(mode: str):
             contribution[table.name] = dict(rows)
 
         return contribution
+
+
+def standard_to_en_main(stdid: str, en_vsrc_table: Table, conn: Connection):
+    primary_key = [key.name for key in en_vsrc_table.primary_key][0]
+    query = select(en_vsrc_table.c.EN_main).where(en_vsrc_table.c[primary_key] == stdid)
+    match = conn.execute(query).fetchone()
+    return match
+
+
+def standard_to_en_main_optional_source(stdid: str, en_vsrc_table: Optional[Table]):
+    with engine.connect() as conn:
+        if en_vsrc_table:
+            match = standard_to_en_main(stdid, en_vsrc_table, conn)
+            return match
+        else:
+            primary_keys = [
+                [key.name for key in en_vsrc_table.primary_key][0]
+                for en_vsrc_table in en_vsrc_tables
+            ]
+            for primary_key, en_vsrc_table in zip(primary_keys, en_vsrc_tables):
+                match = standard_to_en_main(stdid, en_vsrc_table, conn)
+                if match:
+                    return match
+
+
+def locate_standard(stdid: str, en_vsrc_table: Optional[Table]):
+    en_main = standard_to_en_main_optional_source(stdid, en_vsrc_table)
+    if en_main:
+        en_main = en_main[0]
+        with engine.connect() as conn:
+            en_synonyms = en_main_to_synonyms(
+                conn, en_vsrc_tables, en_vsrc_synonym_tables, en_main
+            )
+            vn_main = en_main_in_dictionary(conn, en_main).VN_main
+            vn_synonyms = vn_main_to_synonyms(conn, vn_synonym_table, vn_main)
+            en_main_vsrc = {
+                vsource.name: en_main_to_vsource_id(conn, vsource, en_main)
+                for vsource in en_vsrc_tables
+            }
+
+            return vn_main, en_main, vn_synonyms, en_synonyms, en_main_vsrc
 
 
 def review_per_day(table: Table, date: str = None, mode="update"):

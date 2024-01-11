@@ -1,4 +1,7 @@
 from enum import Enum
+from typing import Literal
+
+from pydantic import BaseModel
 
 
 class TableName(str, Enum):
@@ -11,3 +14,8 @@ class TableName(str, Enum):
     DO_SYNONYM = "CID_LCIN_EN_DO_SYNONYM"
     EDITOR = "CID_LCIN_EDITOR"
     VSOURCE = "CID_LCIN_VALIDATION_SOURCE"
+
+
+class StandardName(str, Enum):
+    EN_UMLS = TableName.EN_UMLS.value
+    EN_DO = TableName.EN_DO.value

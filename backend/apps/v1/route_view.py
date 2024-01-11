@@ -2,8 +2,9 @@ from typing import List, Optional
 
 from apis.v1.route_login import get_current_user
 from apps.v1.route_login import validate_login
-from db.models.table import TableName
+from db.models.table import StandardName, TableName
 from db.repository import view
+from db.repository.view import locate_standard
 from db.session import get_knowledgebase, get_userdb
 from db.session import knowledgebase_engine as engine
 from fastapi import (APIRouter, Depends, HTTPException, Path, Request,
@@ -315,11 +316,11 @@ async def review_table_by_day(
     - dict: A dictionary containing the result or {"msg": "empty"} if the result is None.
     """
 
-    table_names = [table_name.value for table_name in TableName]
-
     response = validate_login(request, userdb)
     if response:
         return response
+
+    table_names = [table_name.value for table_name in TableName]
 
     db_table = view.get_table(table_name.value)
 
@@ -333,3 +334,32 @@ async def review_table_by_day(
 
     else:
         return {"msg": "empty"}
+
+
+@router.get("/std/{stdid}")
+async def locate_standard_id(
+    request: Request,
+    stdid: str,
+    glossary: Optional[StandardName] = None,
+    db: Session = Depends(get_knowledgebase),
+    userdb: Session = Depends(get_userdb),
+):
+    response = validate_login(request, userdb)
+    if response:
+        return response
+    match = locate_standard(stdid, glossary)
+    if not match:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"{stdid} not found in database",
+        )
+    else:
+        vn_main, en_main, vn_synonyms, en_synonyms, en_main_vsrc = match
+
+        return {
+            "vn_main": vn_main,
+            "en_main": en_main,
+            "vn_synonyms": vn_synonyms,
+            "en_synonyms": en_synonyms,
+            "en_main_vsrc": en_main_vsrc,
+        }
