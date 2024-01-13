@@ -1,0 +1,46 @@
+# .gitignore for FastAPI on Linux
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual Environment
+venv/
+env/
+.venv/
+.ENV/
+env.bak/
+env1/
+venv1/
+venv2/
+ansible/
+
+# Logs
+*.log
+
+# Compiled files
+*.pyc
+
+# Database
+*.sqlite3
+*.db
+
+# Dependency directories
+lib/
+lib64/
+
+# .env files
+**/.env
+**/.env.*
+
+# Ignore all caches
+**/__pycache__/
+**/.cache/
+**/.pytest_cache/
+
+# Notebooks
+**/notebooks/
+
+.archive/

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>Activity charts</title>
+{% endblock %}
+
+{% block content %}
+
+<div class="chart-grid">
+
+    {% for table_name in table_names %}
+        <div class="chart-container">
+            <img src="/static/chart/activity_{{ table_name }}.png" alt="{{ table_name }} Activity Chart">
+        </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}
+
