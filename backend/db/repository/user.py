@@ -7,6 +7,44 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 
+def check_familiar_name(email: str):
+    """
+    Raise Error if the email doesn't contain known names
+    """
+    family = settings.FAMILY.split("|")
+
+    if not any([(mem in email) for mem in family]):
+        raise ValidationError(
+            [
+                ErrorWrapper(ValueError(email), "Unknown Email. Contact admin"),
+            ],
+            UserCreate,
+        )
+
+
+def reject_familiar_name(email: str, db: Session):
+    """
+    Check if user already have an account under User
+
+    This is to make sure each person has only one account
+
+    """
+
+    family = settings.FAMILY.split("|")
+
+    for mem in family:
+        if mem in email:
+            if db.query(User).filter(User.email.contains(mem)).first():
+                raise ValidationError(
+                    [
+                        ErrorWrapper(
+                            ValueError(email), "Unsupported Email. Contact admin"
+                        ),
+                    ],
+                    UserCreate,
+                )
+
+
 def create_new_user(user: UserCreate, db: Session):
     """
     Create a new user
@@ -20,15 +58,9 @@ def create_new_user(user: UserCreate, db: Session):
         is_superuser=False,
     )
 
-    family = settings.FAMILY.split("|")
+    check_familiar_name(user.email)
 
-    if not any([(mem in user.email) for mem in family]):
-        raise ValidationError(
-            [
-                ErrorWrapper(ValueError(user.email), "Unknown Email. Contact admin"),
-            ],
-            UserCreate,
-        )
+    reject_familiar_name(user.email, db)
 
     db.add(user)
 
